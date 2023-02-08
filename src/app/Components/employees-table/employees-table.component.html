@@ -1,0 +1,215 @@
+<div class="container-fluid">
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Employee Management System</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <button class="btn btn-outline-success " data-bs-toggle="modal" data-bs-target="#addEmployee" type="submit">Add Employee</button>
+        </div>
+      </div>
+  </nav>
+
+
+
+  <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col">Employee ID</th>
+          <th scope="col">Name</th>
+          <th scope="col">Email</th>
+          <th scope="col">Address</th>
+          <th scope="col">phone</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let employee of empList | paginate: {
+            itemsPerPage: tableSize,
+            currentPage: page,
+            totalItems: count
+          }; let i=index; let odd = odd" [ngClass]="odd ? 'odd_col' : 'even_col'"
+          >
+
+          <td>{{employee.empId}}</td>
+          <td>{{employee.empName}}</td>
+          <td>{{employee.empEmail}}</td>
+          <td>{{employee.empAddress}}</td>
+          <td>{{employee.empPhone}}</td>
+
+          <td>
+              <button type="button" class="btn btn-outline-success me-2" data-bs-toggle="modal" data-bs-target="#editEmployee" (click)="editEmployee(employee)"><img src="../../../assets/images/icons8-pencil-48.png" class="image"></button>
+              <!-- <button type="button" class="btn btn-outline-danger" (click)="deleteEmployee(employee)">Delete</button> -->
+              <button type="button" class="btn btn-outline-danger" (click)="deleteEmployee(employee)">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"></path>
+        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"></path>
+        </svg>
+        </button>
+          </td>
+
+        </tr>
+
+      </tbody>
+    </table>
+    <div class="d-flex justify-content-center">
+      <pagination-controls
+        previousLabel="Prev"
+        nextLabel="Next"
+        (pageChange)="onTableDataChange($event)"
+      >
+      </pagination-controls>
+    </div>
+
+<!-- Add employee modal -->
+<div class="modal fade" id="addEmployee" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add new Employee</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+          <form [formGroup]="empDetail" (ngSubmit)="onSubmit()" novalidate>
+              <div class="mb-3 ">
+                  <label for="name" class="form-label">Name </label>
+                  <input type="text" formControlName="name" class="form-control" id="name" aria-describedby="emailHelp">
+                  <div *ngIf="empDetail.controls['name'].invalid && (empDetail.controls['name'].dirty || empDetail.controls['name'].touched)" class="alert alert-danger form-danger" role="alert">
+                    <div *ngIf="empDetail.controls['name'].errors?.['required']">
+                      This Field is required
+                    </div>
+                </div>
+                </div>
+              <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Email </label>
+                <input type="email" formControlName="email" class="form-control" id="email" aria-describedby="emailHelp">
+                <div *ngIf="empDetail.controls['email'].invalid && (empDetail.controls['email'].dirty || empDetail.controls['email'].touched)" class="alert alert-danger form-danger" role="alert">
+                  <div *ngIf="empDetail.controls['email'].errors?.['required']">
+                    This Field is required
+                  </div>
+                  <div *ngIf="empDetail.controls['email'].errors?.['email']">
+                    Email format is invalid
+                  </div>
+              </div>
+              </div>
+              <div class="mb-3">
+                  <label for="exampleInputEmail1" class="form-label">Address </label>
+                  <input type="text" formControlName="address" class="form-control" id="address" aria-describedby="emailHelp">
+                  <div *ngIf="empDetail.controls['address'].invalid && (empDetail.controls['address'].dirty || empDetail.controls['address'].touched)" class="alert alert-danger form-danger" role="alert">
+                  <div *ngIf="empDetail.controls['address'].errors?.['required']">
+                    This Field is required
+                  </div>
+              </div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="exampleInputEmail1" class="form-label">phone </label>
+                  <input type="text" formControlName="phone" class="form-control" id="phone" aria-describedby="emailHelp">
+                  <div *ngIf="empDetail.controls['phone'].invalid && (empDetail.controls['phone'].dirty || empDetail.controls['phone'].touched)" class="alert alert-danger form-danger" role="alert">
+                    <div *ngIf="empDetail.controls['phone'].errors?.['required']">
+                      This Field is required
+                    </div>
+                    <div *ngIf="empDetail.controls['phone'].errors?.['pattern']">
+                      phone number must start with 010 or 011 or 012
+                    </div>
+                    <div *ngIf="empDetail.controls['phone'].errors?.['maxLength']">
+                      phone number must be 11 numbers
+                    </div>
+                    <div *ngIf="empDetail.controls['phone'].errors?.['minLength']">
+                      phone number must be 11 numbers
+                    </div>
+
+                </div>
+                </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="addEmployee()"  [disabled]="!empDetail.valid">Add employee</button>
+                </div>
+            </form>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- Edit employee modal -->
+<div class="modal fade" id="editEmployee" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Edit employee details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+          <form [formGroup]="empDetail">
+            <div class="mb-3 ">
+              <label for="name" class="form-label">Name </label>
+              <input type="text" formControlName="name" class="form-control" id="name" aria-describedby="emailHelp">
+              <div *ngIf="empDetail.controls['name'].invalid && (empDetail.controls['name'].dirty || empDetail.controls['name'].touched)" class="alert alert-danger form-danger" role="alert">
+                <div *ngIf="empDetail.controls['name'].errors?.['required']">
+                  This Field is required
+                </div>
+            </div>
+            </div>
+          <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Email </label>
+            <input type="email" formControlName="email" class="form-control" id="email" aria-describedby="emailHelp">
+            <div *ngIf="empDetail.controls['email'].invalid && (empDetail.controls['email'].dirty || empDetail.controls['email'].touched)" class="alert alert-danger form-danger" role="alert">
+              <div *ngIf="empDetail.controls['email'].errors?.['required']">
+                This Field is required
+              </div>
+              <div *ngIf="empDetail.controls['email'].errors?.['email']">
+                Email format is invalid
+              </div>
+          </div>
+          </div>
+          <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Address </label>
+              <input type="text" formControlName="address" class="form-control" id="address" aria-describedby="emailHelp">
+              <div *ngIf="empDetail.controls['address'].invalid && (empDetail.controls['address'].dirty || empDetail.controls['address'].touched)" class="alert alert-danger form-danger" role="alert">
+              <div *ngIf="empDetail.controls['address'].errors?.['required']">
+                This Field is required
+              </div>
+          </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">phone </label>
+              <input type="text" formControlName="phone" class="form-control" id="phone" aria-describedby="emailHelp">
+              <div *ngIf="empDetail.controls['phone'].invalid && (empDetail.controls['phone'].dirty || empDetail.controls['phone'].touched)" class="alert alert-danger form-danger" role="alert">
+                <div *ngIf="empDetail.controls['phone'].errors?.['required']">
+                  This Field is required
+                </div>
+                <div *ngIf="empDetail.controls['phone'].errors?.['pattern']">
+                  phone number must start with 010 or 011 or 012
+                </div>
+                <div *ngIf="empDetail.controls['phone'].errors?.['maxLength']">
+                  phone number must be 11 numbers
+                </div>
+                <div *ngIf="empDetail.controls['phone'].errors?.['minLength']">
+                  phone number must be 11 numbers
+                </div>
+
+            </div>
+            </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-outline-success" (click)="updateEmployee()" data-bs-dismiss="modal" [disabled]="!empDetail.valid">Update </button>
+                </div>
+            </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+
